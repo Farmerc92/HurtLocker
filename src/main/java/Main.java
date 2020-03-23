@@ -20,20 +20,7 @@ public class Main {
             if (tempProduct != null)
                 productsList.add(tempProduct);
         }
-        LinkedHashMap<String, LinkedHashMap<String, Integer>> productMap = new LinkedHashMap<>();
-        for (Product p : productsList) {
-            if (!productMap.containsKey(p.getName())) {
-                LinkedHashMap<String, Integer> prices = new LinkedHashMap<>();
-                prices.put(p.getPrice(), 1);
-                productMap.put(p.getName(), prices);
-            } else {
-                LinkedHashMap<String, Integer> prices = productMap.get(p.getName());
-                if (prices.containsKey(p.getPrice()))
-                    prices.put(p.getPrice(), prices.get(p.getPrice()) + 1);
-                else
-                    prices.put(p.getPrice(), 1);
-            }
-        }
+        LinkedHashMap<String, LinkedHashMap<String, Integer>> productMap = convertToMap(productsList);
         StringBuilder builder = new StringBuilder();
         for (String name : productMap.keySet()) {
             LinkedHashMap<String, Integer> priceMap = productMap.get(name);
@@ -81,5 +68,31 @@ public class Main {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    public static LinkedHashMap<String, LinkedHashMap<String, Integer>> convertToMap(ArrayList<Product> productsList){
+        LinkedHashMap<String, LinkedHashMap<String, Integer>> productMap = new LinkedHashMap<>();
+        for (Product p : productsList) {
+            if (!productMap.containsKey(p.getName())) {
+                addNewKey(productMap, p);
+            } else {
+                addToExistingKey(productMap, p);
+            }
+        }
+        return productMap;
+    }
+
+    public static void addNewKey(LinkedHashMap<String, LinkedHashMap<String, Integer>> productMap, Product p){
+        LinkedHashMap<String, Integer> prices = new LinkedHashMap<>();
+        prices.put(p.getPrice(), 1);
+        productMap.put(p.getName(), prices);
+    }
+
+    public static void addToExistingKey(LinkedHashMap<String, LinkedHashMap<String, Integer>> productMap, Product p){
+        LinkedHashMap<String, Integer> prices = productMap.get(p.getName());
+        if (prices.containsKey(p.getPrice()))
+            prices.put(p.getPrice(), prices.get(p.getPrice()) + 1);
+        else
+            prices.put(p.getPrice(), 1);
     }
 }
