@@ -37,10 +37,7 @@ public class Main {
         StringBuilder builder = new StringBuilder();
         for (String name : productMap.keySet()) {
             LinkedHashMap<String, Integer> priceMap = productMap.get(name);
-            int sum = 0;
-            for(Map.Entry<String, Integer> entry : priceMap.entrySet()){
-                sum += entry.getValue();
-            }
+            Integer sum = priceMap.values().stream().reduce(0, Integer::sum);
             builder.append(String.format("name:%8s \t\t seen: %d times\n", name, sum));
             builder.append(String.format("%s \t"+" "+"\t %s\n", equalBreak(), equalBreak()));
             int dashCount = 0;
