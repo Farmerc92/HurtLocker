@@ -1,5 +1,6 @@
 import org.apache.commons.io.IOUtils;
-import java.io.IOException;
+
+import java.io.*;
 import java.util.*;
 
 public class Main {
@@ -40,23 +41,25 @@ public class Main {
             for(Map.Entry<String, Integer> entry : priceMap.entrySet()){
                 sum += entry.getValue();
             }
-            builder.append(String.format("name:%8s %6s seen: %d times\n", name, " ", sum));
-            builder.append(String.format("%s %6s %s\n", equalBreak(), " ", equalBreak()));
+            builder.append(String.format("name:%8s \t\t seen: %d times\n", name, sum));
+            builder.append(String.format("%s \t"+" "+"\t %s\n", equalBreak(), equalBreak()));
+            int dashCount = 0;
             for(String price : priceMap.keySet()){
                 int sumPrice = priceMap.get(price);
                 if (sumPrice > 1)
-                    builder.append(String.format("Price:%7s %6s seen: %d times\n", price, " ", sumPrice));
+                    builder.append(String.format("Price: \t %4s\t\t seen: %d times\n", price, sumPrice));
                 else
-                    builder.append(String.format("Price:%7s %6s seen: %d time\n", price, " ", sumPrice));
-                if (priceMap.keySet().size() == 1)
-                    builder.append(String.format("%s %6s %s\n", dashBreak(), " ", dashBreak()));
-                else
-                    builder.append(String.format("%s %6s %s\n", dashBreak(), " ", dashBreak()));
+                    builder.append(String.format("Price:   %4s\t\t seen: %d time\n", price, sumPrice));
+                if (dashCount < 1) {
+                    builder.append(String.format("%s\t\t %s\n", dashBreak(), dashBreak()));
+                    dashCount++;
+                }
             }
             builder.append("\n");
         }
-        builder.append(String.format("Errors%15s seen: %d times", " ", parser.getErrorCount()));
+        builder.append(String.format("Errors \t\t\t\t seen: %d times", parser.getErrorCount()));
         System.out.println(builder.toString());
+        myOutputTxt(builder.toString());
     }
 
     public static String equalBreak(){
@@ -73,5 +76,13 @@ public class Main {
             dash.append("-");
         }
         return dash.toString();
+    }
+
+    public static void myOutputTxt(String output){
+        try (PrintStream out = new PrintStream(new FileOutputStream("MyOutput.txt"))) {
+            out.print(output);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }
