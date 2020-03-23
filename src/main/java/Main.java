@@ -19,23 +19,23 @@ public class Main {
             if (tempProduct != null)
                 productsList.add(tempProduct);
         }
-        LinkedHashMap<String, TreeMap<String, Integer>> productMap = new LinkedHashMap<>();
+        LinkedHashMap<String, LinkedHashMap<String, Integer>> productMap = new LinkedHashMap<>();
         for (Product p : productsList) {
             if (!productMap.containsKey(p.getName())) {
-                TreeMap<String, Integer> tree = new TreeMap<>();
-                tree.put(p.getPrice(), 1);
-                productMap.put(p.getName(), tree);
+                LinkedHashMap<String, Integer> prices = new LinkedHashMap<>();
+                prices.put(p.getPrice(), 1);
+                productMap.put(p.getName(), prices);
             } else {
-                TreeMap<String, Integer> tree = productMap.get(p.getName());
-                if (tree.containsKey(p.getPrice()))
-                    tree.put(p.getPrice(), tree.get(p.getPrice()) + 1);
+                LinkedHashMap<String, Integer> prices = productMap.get(p.getName());
+                if (prices.containsKey(p.getPrice()))
+                    prices.put(p.getPrice(), prices.get(p.getPrice()) + 1);
                 else
-                    tree.put(p.getPrice(), 1);
+                    prices.put(p.getPrice(), 1);
             }
         }
         StringBuilder builder = new StringBuilder();
         for (String name : productMap.keySet()) {
-            TreeMap<String, Integer> priceMap = productMap.get(name);
+            LinkedHashMap<String, Integer> priceMap = productMap.get(name);
             int sum = 0;
             for(Map.Entry<String, Integer> entry : priceMap.entrySet()){
                 sum += entry.getValue();
@@ -43,15 +43,15 @@ public class Main {
             builder.append(String.format("name:%8s %6s seen: %d times\n", name, " ", sum));
             builder.append(String.format("%s %6s %s\n", equalBreak(), " ", equalBreak()));
             for(String price : priceMap.keySet()){
-                int sumPrice = 0;
-                for(Map.Entry<String, Integer> entry : priceMap.entrySet()){
-                    sumPrice += entry.getValue();
-                }
+                int sumPrice = priceMap.get(price);
                 if (sumPrice > 1)
                     builder.append(String.format("Price:%7s %6s seen: %d times\n", price, " ", sumPrice));
                 else
                     builder.append(String.format("Price:%7s %6s seen: %d time\n", price, " ", sumPrice));
-                builder.append(String.format("%s %6s %s\n", dashBreak(), " ", dashBreak()));
+                if (priceMap.keySet().size() == 1)
+                    builder.append(String.format("%s %6s %s\n", dashBreak(), " ", dashBreak()));
+                else
+                    builder.append(String.format("%s %6s %s\n", dashBreak(), " ", dashBreak()));
             }
             builder.append("\n");
         }
