@@ -2,7 +2,10 @@ import java.util.regex.Pattern;
 
 public class ProductParser {
 
+    private int errorCount = 0;
+
     public Product parseLine(String line) {
+        int check = errorCount;
         String[] product = keyValuesSeparated(line);
         String name = product[1];
         String price = product[3];
@@ -12,6 +15,9 @@ public class ProductParser {
         price = exceptionCheckPrice(price);
         type = exceptionCheckType(type);
         expiration = exceptionCheckExpiration(expiration);
+        if (errorCount > check){
+            return null;
+        }
         return new Product(name, price, type, expiration);
     }
 
@@ -30,7 +36,7 @@ public class ProductParser {
 
     public String patternMatcherName(String name){
         //ignore caveman regexs
-        String milk = "[Mm],[Ii][Ll][Kk]";
+        String milk = "[Mm][Ii][Ll][Kk]";
         String bread = "[Bb][Rr][Ee][Aa][Dd]";
         String cookies = "[Cc][0Oo][0Oo][Kk][Ii][Ee][Ss]";
         String apples = "[Aa][Pp][Pp][Ll][Ee][Ss]";
@@ -43,14 +49,16 @@ public class ProductParser {
             return "Cookies";
         else if (Pattern.matches(apples, name))
             return "Apples";
-        else
-            throw new IllegalArgumentException();
+        else{
+            errorCount++;
+        }
+        return name;
     }
 
     public String exceptionCheckPrice(String price){
-        String pricePattern = "[0-9.]";
+        String pricePattern = "[0-9]+[.][0-9]+";
         if (!Pattern.matches(pricePattern, price)){
-            throw new IllegalArgumentException();
+            errorCount++;
         }
         return price;
     }
@@ -58,7 +66,7 @@ public class ProductParser {
     public String exceptionCheckType(String type){
         String typePattern = "[Ff][Oo][Oo][Dd]";
         if (!Pattern.matches(typePattern, type)){
-            throw new IllegalArgumentException();
+            errorCount++;
         }
         return type;
     }
@@ -66,8 +74,12 @@ public class ProductParser {
     public String exceptionCheckExpiration(String expiration){
         String expirationPattern = "[0-9]+[/][0-9]+[/][0-9]+";
         if (!Pattern.matches(expirationPattern, expiration)){
-            throw new IllegalArgumentException();
+            errorCount++;
         }
         return expiration;
+    }
+
+    public int getErrorCount() {
+        return errorCount;
     }
 }
