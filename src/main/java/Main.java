@@ -24,9 +24,7 @@ public class Main {
         StringBuilder builder = new StringBuilder();
         for (String name : productMap.keySet()) {
             LinkedHashMap<String, Integer> priceMap = productMap.get(name);
-            Integer sum = priceMap.values().stream().reduce(0, Integer::sum);
-            builder.append(String.format("name:%8s \t\t seen: %d times\n", name, sum));
-            builder.append(String.format("%s \t"+" "+"\t %s\n", equalBreak(), equalBreak()));
+            appendNameAndSum(priceMap, name, builder);
             int dashCount = 0;
             for(String price : priceMap.keySet()){
                 int sumPrice = priceMap.get(price);
@@ -34,10 +32,7 @@ public class Main {
                     builder.append(String.format("Price: \t %4s\t\t seen: %d times\n", price, sumPrice));
                 else
                     builder.append(String.format("Price:   %4s\t\t seen: %d time\n", price, sumPrice));
-                if (dashCount < 1) {
-                    builder.append(String.format("%s\t\t %s\n", dashBreak(), dashBreak()));
-                    dashCount++;
-                }
+                dashCount = appendDashAndCheckCount(builder, dashCount);
             }
             builder.append("\n");
         }
@@ -94,5 +89,19 @@ public class Main {
             prices.put(p.getPrice(), prices.get(p.getPrice()) + 1);
         else
             prices.put(p.getPrice(), 1);
+    }
+
+    public static void appendNameAndSum(LinkedHashMap<String, Integer> priceMap, String name, StringBuilder builder){
+        Integer sum = priceMap.values().stream().reduce(0, Integer::sum);
+        builder.append(String.format("name:%8s \t\t seen: %d times\n", name, sum));
+        builder.append(String.format("%s \t"+" "+"\t %s\n", equalBreak(), equalBreak()));
+    }
+
+    public static int appendDashAndCheckCount(StringBuilder builder, int dashCount){
+        if (dashCount < 1) {
+            builder.append(String.format("%s\t\t %s\n", dashBreak(), dashBreak()));
+            dashCount++;
+        }
+        return dashCount;
     }
 }
