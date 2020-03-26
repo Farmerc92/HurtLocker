@@ -5,20 +5,21 @@ public class ProductParser {
     private int errorCount = 0;
 
     public Product parseLine(String line) {
-        int check = errorCount;
-        String[] product = keyValuesSeparated(line);
-        String name = product[1];
-        String price = product[3];
-        String type = product[5];
-        String expiration = product[7];
-        name = patternMatcherName(name);
-        price = exceptionCheckPrice(price);
-        type = exceptionCheckType(type);
-        expiration = exceptionCheckExpiration(expiration);
-        if (errorCount > check){
-            return null;
+        try {
+            String[] product = keyValuesSeparated(line);
+            String name = product[1];
+            String price = product[3];
+            String type = product[5];
+            String expiration = product[7];
+            name = patternMatcherName(name);
+            price = exceptionCheckPrice(price);
+            type = exceptionCheckType(type);
+            expiration = exceptionCheckExpiration(expiration);
+            return new Product(name, price, type, expiration);
+        }catch(IllegalArgumentException e){
+            errorCount++;
         }
-        return new Product(name, price, type, expiration);
+        return null;
     }
 
     public String[] lines(){
@@ -34,7 +35,7 @@ public class ProductParser {
         return line.split("[^a-zA-Z0-9/.]");
     }
 
-    public String patternMatcherName(String name){
+    public String patternMatcherName(String name) throws IllegalArgumentException{
         //ignore caveman regexs
         String milk = "[Mm][Ii][Ll][Kk]";
         String bread = "[Bb][Rr][Ee][Aa][Dd]";
@@ -50,31 +51,30 @@ public class ProductParser {
         else if (Pattern.matches(apples, name))
             return "Apples";
         else{
-            errorCount++;
+            throw new IllegalArgumentException();
         }
-        return name;
     }
 
-    public String exceptionCheckPrice(String price){
+    public String exceptionCheckPrice(String price) throws IllegalArgumentException{
         String pricePattern = "[0-9]+[.][0-9]+";
         if (!Pattern.matches(pricePattern, price)){
-            errorCount++;
+            throw new IllegalArgumentException();
         }
         return price;
     }
 
-    public String exceptionCheckType(String type){
+    public String exceptionCheckType(String type) throws IllegalArgumentException{
         String typePattern = "[Ff][Oo][Oo][Dd]";
         if (!Pattern.matches(typePattern, type)){
-            errorCount++;
+            throw new IllegalArgumentException();
         }
         return type;
     }
 
-    public String exceptionCheckExpiration(String expiration){
+    public String exceptionCheckExpiration(String expiration) throws IllegalArgumentException{
         String expirationPattern = "[0-9]+[/][0-9]+[/][0-9]+";
         if (!Pattern.matches(expirationPattern, expiration)){
-            errorCount++;
+            throw new IllegalArgumentException();
         }
         return expiration;
     }
