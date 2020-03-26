@@ -7,14 +7,10 @@ public class ProductParser {
     public Product parseLine(String line) {
         try {
             String[] product = keyValuesSeparated(line);
-            String name = product[1];
-            String price = product[3];
-            String type = product[5];
-            String expiration = product[7];
-            name = patternMatcherName(name);
-            price = exceptionCheckPrice(price);
-            type = exceptionCheckType(type);
-            expiration = exceptionCheckExpiration(expiration);
+            String name = patternMatcherName(product[1]);
+            String price = exceptionCheckPrice(product[3]);
+            String type = exceptionCheckType(product[5]);
+            String expiration = exceptionCheckExpiration(product[7]);
             return new Product(name, price, type, expiration);
         }catch(IllegalArgumentException e){
             errorCount++;
