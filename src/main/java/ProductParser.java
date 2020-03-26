@@ -36,23 +36,16 @@ public class ProductParser {
     }
 
     public String patternMatcherName(String name) throws IllegalArgumentException{
-        //ignore caveman regexs
-        String milk = "[Mm][Ii][Ll][Kk]";
-        String bread = "[Bb][Rr][Ee][Aa][Dd]";
-        String cookies = "[Cc][0Oo][0Oo][Kk][Ii][Ee][Ss]";
-        String apples = "[Aa][Pp][Pp][Ll][Ee][Ss]";
-
-        if (Pattern.matches(milk, name))
+        if (Pattern.matches("[Mm][Ii][Ll][Kk]", name))
             return "Milk";
-        else if (Pattern.matches(bread, name))
+        else if (Pattern.matches("[Bb][Rr][Ee][Aa][Dd]", name))
             return "Bread";
-        else if (Pattern.matches(cookies, name))
+        else if (Pattern.matches("[Cc][0Oo][0Oo][Kk][Ii][Ee][Ss]", name))
             return "Cookies";
-        else if (Pattern.matches(apples, name))
+        else if (Pattern.matches("[Aa][Pp][Pp][Ll][Ee][Ss]", name))
             return "Apples";
-        else{
+        else
             throw new IllegalArgumentException();
-        }
     }
 
     public String exceptionCheckPrice(String price) throws IllegalArgumentException{

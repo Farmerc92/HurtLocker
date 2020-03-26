@@ -5,6 +5,8 @@ import java.util.*;
 
 public class Main {
 
+    private static ProductParser parser = new ProductParser();
+
     public String readRawDataToString() throws Exception{
         ClassLoader classLoader = getClass().getClassLoader();
         String result = IOUtils.toString(classLoader.getResourceAsStream("RawData.txt"));
@@ -12,7 +14,17 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        ProductParser parser = new ProductParser();
+        hurtLocker();
+    }
+
+    public static void hurtLocker(){
+        StringBuilder builder = new StringBuilder();
+        buildOutput(convertToMap(products()), builder);
+        System.out.println(builder.toString());
+        myOutputTxt(builder.toString());
+    }
+
+    public static ArrayList<Product> products(){
         String[] lines = parser.lines();
         ArrayList<Product> productsList = new ArrayList<>();
         for (int i = 0; i < lines.length; i++) {
@@ -20,25 +32,29 @@ public class Main {
             if (tempProduct != null)
                 productsList.add(tempProduct);
         }
-        LinkedHashMap<String, LinkedHashMap<String, Integer>> productMap = convertToMap(productsList);
-        StringBuilder builder = new StringBuilder();
+        return productsList;
+    }
+
+    public static void buildOutput(LinkedHashMap<String, LinkedHashMap<String, Integer>> productMap, StringBuilder builder){
         for (String name : productMap.keySet()) {
             LinkedHashMap<String, Integer> priceMap = productMap.get(name);
             appendNameAndSum(priceMap, name, builder);
-            int dashCount = 0;
-            for(String price : priceMap.keySet()){
-                int sumPrice = priceMap.get(price);
-                if (sumPrice > 1)
-                    builder.append(String.format("Price: \t %4s\t\t seen: %d times\n", price, sumPrice));
-                else
-                    builder.append(String.format("Price:   %4s\t\t seen: %d time\n", price, sumPrice));
-                dashCount = appendDashAndCheckCount(builder, dashCount);
-            }
+            buildPriceOutput(priceMap, builder);
             builder.append("\n");
         }
         builder.append(String.format("Errors \t\t\t\t seen: %d times", parser.getErrorCount()));
-        System.out.println(builder.toString());
-        myOutputTxt(builder.toString());
+    }
+
+    public static void buildPriceOutput(LinkedHashMap<String, Integer> priceMap, StringBuilder builder){
+        int dashCount = 0;
+        for(String price : priceMap.keySet()){
+            int sumPrice = priceMap.get(price);
+            if (sumPrice > 1)
+                builder.append(String.format("Price: \t %4s\t\t seen: %d times\n", price, sumPrice));
+            else
+                builder.append(String.format("Price:   %4s\t\t seen: %d time\n", price, sumPrice));
+            dashCount = appendDashAndCheckCount(builder, dashCount);
+        }
     }
 
     public static String equalBreak(){
